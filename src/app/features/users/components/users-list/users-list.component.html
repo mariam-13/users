@@ -1,0 +1,19 @@
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Last Name</th>
+        <th>Age</th>
+        <th>Email</th>
+        <th>Number</th>
+    </tr>
+    <tr *ngFor="let user of users" [ngClass]="{selected: selectedId === user.id}">
+        <td>{{user.id}}</td>
+        <td>{{user.name}}</td>
+        <td>{{user.lastName}}</td>
+        <td>{{user.age}}</td>
+        <td>{{user.email}}</td>
+        <td>{{user.mobile}}</td>
+        <td><button (click)="select.emit(user.id)">Select</button></td>
+    </tr>
+</table>
