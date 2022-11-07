@@ -1,0 +1,45 @@
+<form [formGroup]="form">
+  <input
+    type="text"
+    formControlName="name"
+    placeholder="name"
+    [ngClass]="{ inValid: name.invalid && name.touched }"
+  />
+  <div *ngIf="name.errors && name.errors.required && name.touched">
+    fill in this field
+  </div>
+  <div *ngIf="name.errors && name.errors.minlength && name.touched">
+    Minimum is 3 symbols
+  </div>
+  <input
+    type="text"
+    formControlName="lastName"
+    placeholder="lastName"
+    [ngClass]="{ inValid: lastname.invalid && lastname.touched }"
+  />
+  <div *ngIf="lastname.errors && lastname.errors.required && lastname.touched">
+    fill in this field
+  </div>
+  <div *ngIf="lastname.errors && lastname.errors.minlength && lastname.touched">
+    Minimum is 3 symbols
+  </div>
+  <input
+    type="number"
+    formControlName="age"
+    placeholder="age"
+    [ngClass]="{ inValid: age.invalid && age.touched }"
+  />
+  <input
+    type="text"
+    formControlName="email"
+    placeholder="email"
+    [ngClass]="{ inValid: email.invalid && email.touched }"
+  />
+  <input
+    type="text"
+    formControlName="mobile"
+    placeholder="mobile"
+    [ngClass]="{ inValid: mobile.invalid && mobile.touched }"
+  />
+  <button (click)="onSubmit()" [disabled]="!isvalid">create</button>
+</form>

@@ -11,6 +11,8 @@ export class UsersComponent implements OnInit {
 
   selectedUserId: number | null = null;
 
+  addUser = false;
+
   users: IUser[] = [
     {
       id: 1,
