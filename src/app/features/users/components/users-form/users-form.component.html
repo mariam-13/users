@@ -41,5 +41,5 @@
     placeholder="mobile"
     [ngClass]="{ inValid: mobile.invalid && mobile.touched }"
   />
-  <button (click)="onSubmit()" [disabled]="!isvalid">create</button>
+  <button (click)="submit()" [disabled]="!isvalid">create</button>
 </form>

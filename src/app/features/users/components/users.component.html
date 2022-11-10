@@ -1,0 +1,14 @@
+<button (click)="onDelete()" [disabled]="!selectedUserId">Delete</button>
+<button (click)="onAddNewUser()">Add</button>
+
+<app-users-list
+  [selectedId]="selectedUserId"
+  [users]="users"
+  (select)="selectedUserId = $event"
+  (edit)="onEdit($event)"
+></app-users-list>
+<app-form
+  *ngIf="addNewUserMode || chosenPostToEdit"
+  [chosenPostToEdit]="chosenPostToEdit"
+  (onSubmit)="onSubmit($event)"
+></app-form>

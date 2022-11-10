@@ -6,3 +6,5 @@ export interface IUser {
     name: string,
     lastName: string
 }
+
+export type INewUser = Pick<IUser, "age" | "email" | "mobile" | "name" | "lastName">

@@ -1,0 +1,28 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "age": 19,
+      "email": "user.1@gmail.com",
+      "mobile": "599402159",
+      "name": "John",
+      "lastName": "Doe"
+    },
+    {
+      "id": 2,
+      "age": 49,
+      "email": "user.2@gmail.com",
+      "mobile": "589447651",
+      "name": "Jeff",
+      "lastName": "Scott"
+    },
+    {
+      "id": 3,
+      "age": 80,
+      "email": "user.3@gmail.com",
+      "mobile": "5774711279",
+      "name": "Erick",
+      "lastName": "mayhew"
+    }
+  ]
+}

@@ -12,6 +12,7 @@ export class UsersListComponent implements OnInit {
   @Input() selectedId: number | null;
 
   @Output() select = new EventEmitter<number>();
+  @Output() edit = new EventEmitter<number>();
 
   constructor() { }
 

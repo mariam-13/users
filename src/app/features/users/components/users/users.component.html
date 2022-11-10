@@ -1,8 +1,0 @@
-<button (click)="onDelete()" [disabled]="!selectedUserId">Delete</button>
-
-<app-users-list
-  [selectedId]="selectedUserId"
-  [users]="users"
-  (select)="selectedUserId = $event"
-></app-users-list>
-<app-form [users]="users"></app-form>
