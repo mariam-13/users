@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { INewUser, IUser } from '../modules/user.interface';
 import { UsersHttpService } from '../services/users-http.service';
 import { catchError, retry, tap } from 'rxjs/operators';
+import { HandlerService } from '../services/handler.service';
 
 @Component({
   selector: 'app-users',
@@ -17,9 +18,18 @@ export class UsersComponent implements OnInit {
   users: IUser[] = [];
 
   getAllUsers() {
-    this.usersHttp.getUsers().subscribe((data) => {
-      this.users = data;
-    });
+    this.usersHttp
+      .getUsers()
+      .pipe(
+        tap((data) => {
+          this.users = data;
+        }),
+        catchError((err) => {
+          this.errorHandler.isError(err);
+          return of(null);
+        })
+      )
+      .subscribe();
   }
 
   onselect(id: number) {
@@ -41,7 +51,7 @@ export class UsersComponent implements OnInit {
         }),
         retry(2),
         catchError((err) => {
-          alert('something went wrong');
+          this.errorHandler.isError(err);
           return of(null);
         })
       )
@@ -51,17 +61,35 @@ export class UsersComponent implements OnInit {
   }
 
   addNewUser(user: INewUser) {
-    this.usersHttp.addNewUser(user).subscribe((data) => {
-      this.users.push(data);
-      this.addNewUserMode = false;
-    });
+    this.usersHttp
+      .addNewUser(user)
+      .pipe(
+        tap((data) => {
+          this.users.push(data);
+        }),
+        catchError((err) => {
+          this.errorHandler.isError(err);
+          return of(null);
+        })
+      )
+      .subscribe();
+    this.addNewUserMode = false;
   }
 
   updateUser(user: IUser) {
-    this.usersHttp.updateUser(user).subscribe((data) => {
-      this.getAllUsers();
-      this.chosenPostToEdit = null;
-    });
+    this.usersHttp
+      .updateUser(user)
+      .pipe(
+        tap((data) => {
+          this.getAllUsers();
+        }),
+        catchError((err) => {
+          this.errorHandler.isError(err);
+          return of(null);
+        })
+      )
+      .subscribe();
+    this.chosenPostToEdit = null;
   }
 
   onAddNewUser() {
@@ -85,7 +113,10 @@ export class UsersComponent implements OnInit {
       this.updateUser(user as IUser);
     }
   }
-  constructor(private usersHttp: UsersHttpService) {}
+  constructor(
+    private usersHttp: UsersHttpService,
+    private errorHandler: HandlerService
+  ) {}
 
   ngOnInit(): void {
     this.getAllUsers();
