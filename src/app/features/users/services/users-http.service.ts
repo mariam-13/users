@@ -25,4 +25,8 @@ export class UsersHttpService {
   updateUser(user: IUser) {
     return this.httpClient.put<IUser>(this.backendUrl + '/' + user.id, user);
   }
+
+  getOneUser(id: number) {
+    return this.httpClient.get(this.backendUrl + '/' + id);
+  }
 }

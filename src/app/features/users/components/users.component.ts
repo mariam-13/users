@@ -1,21 +1,24 @@
-import { Component, OnInit } from '@angular/core';
-import { of } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { of, Subscription } from 'rxjs';
 import { INewUser, IUser } from '../modules/user.interface';
 import { UsersHttpService } from '../services/users-http.service';
 import { catchError, retry, tap } from 'rxjs/operators';
 import { HandlerService } from '../services/handler.service';
+import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css'],
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit, OnDestroy {
   selectedUserId: number | null = null;
   chosenPostToEdit: IUser | null = null;
   addNewUserMode = false;
 
   users: IUser[] = [];
+
+  sub: Subscription;
 
   getAllUsers() {
     this.usersHttp
@@ -60,65 +63,25 @@ export class UsersComponent implements OnInit {
     this.selectedUserId = null;
   }
 
-  addNewUser(user: INewUser) {
-    this.usersHttp
-      .addNewUser(user)
-      .pipe(
-        tap((data) => {
-          this.users.push(data);
-        }),
-        catchError((err) => {
-          this.errorHandler.isError(err);
-          return of(null);
-        })
-      )
-      .subscribe();
-    this.addNewUserMode = false;
-  }
-
-  updateUser(user: IUser) {
-    this.usersHttp
-      .updateUser(user)
-      .pipe(
-        tap((data) => {
-          this.getAllUsers();
-        }),
-        catchError((err) => {
-          this.errorHandler.isError(err);
-          return of(null);
-        })
-      )
-      .subscribe();
-    this.chosenPostToEdit = null;
-  }
-
   onAddNewUser() {
     this.addNewUserMode = true;
   }
 
-  onSubmit(user: INewUser | IUser) {
-    if (!(user as IUser).id) {
-      const newUser = {
-        name: user.name,
-        lastName: user.lastName,
-        age: user.age,
-        email: user.email,
-        mobile: user.mobile,
-      };
-      this.addNewUser(newUser);
-    } else {
-      const indexToReplace = this.users.findIndex(
-        (p) => p.id === (user as IUser).id
-      ) as number;
-      this.updateUser(user as IUser);
-    }
-  }
   constructor(
     private usersHttp: UsersHttpService,
-    private errorHandler: HandlerService
+    private errorHandler: HandlerService,
+    private router: Router
   ) {}
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
+  }
 
   ngOnInit(): void {
+    this.sub = this.router.events.subscribe((e) => {
+      if (e instanceof NavigationEnd) {
+        console.log('starrt');
+      }
+    });
     this.getAllUsers();
   }
 }

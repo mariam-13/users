@@ -8,7 +8,11 @@ import {
 } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { INewUser, IUser } from '../../modules/user.interface';
-import { Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
+import { ActivatedRoute, Route, Router } from '@angular/router';
+import { UsersHttpService } from '../../services/users-http.service';
+import { catchError, filter, switchMap, tap } from 'rxjs/operators';
+import { HandlerService } from '../../services/handler.service';
 
 @Component({
   selector: 'app-form',
@@ -16,19 +20,33 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./users-form.component.css'],
 })
 export class FormComponent implements OnInit, OnDestroy {
-  _chosenPostToEdit: IUser | null;
-  @Input() set chosenPostToEdit(user: IUser | null) {
-    this._chosenPostToEdit = user;
-    if (user) {
-      this.form.patchValue(user);
-    } else {
-      this.form.reset();
-    }
-  }
-
-  @Output() onSubmit = new EventEmitter();
-
+  id: number | undefined;
+  _chosenpostToEdit: INewUser | null;
+  chosenpostToEdit$ = this.route.params.pipe(
+    filter((data) => {
+      return data.id;
+    }),
+    switchMap((data) => {
+      this.id = data.id;
+      return this.usersHttp.getOneUser(data.id);
+    }),
+    tap((data) => {
+      (this._chosenpostToEdit = data as INewUser), this.form.patchValue(data);
+    })
+  );
   subs: Subscription[] = [];
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private errorHandler: HandlerService,
+    private usersHttp: UsersHttpService
+  ) {}
+
+  ngOnInit() {
+    this.chosenpostToEdit$.subscribe();
+    this.valueChanges();
+  }
 
   form = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(3)]),
@@ -47,7 +65,45 @@ export class FormComponent implements OnInit, OnDestroy {
 
   submit() {
     const data = this.form.value;
-    this.onSubmit.emit({ ...this._chosenPostToEdit, ...data });
+    if (this.id) {
+      console.log('update');
+
+      this.updateUser({ ...(data as IUser), id: this.id as number });
+    } else {
+      console.log(data.id);
+
+      this.addNewUser(data);
+    }
+  }
+
+  addNewUser(user: INewUser) {
+    this.usersHttp
+      .addNewUser(user)
+      .pipe(
+        tap((data) => {
+          this.router.navigate(['../', { relativeTo: this.route }]);
+        }),
+        catchError((err) => {
+          this.errorHandler.isError(err);
+          return of(null);
+        })
+      )
+      .subscribe();
+  }
+
+  updateUser(user: IUser) {
+    this.usersHttp
+      .updateUser(user)
+      .pipe(
+        tap((data) => {
+          this.router.navigate(['../', { relativeTo: this.route }]);
+        }),
+        catchError((err) => {
+          this.errorHandler.isError(err);
+          return of(null);
+        })
+      )
+      .subscribe();
   }
 
   get isvalid() {
@@ -68,10 +124,6 @@ export class FormComponent implements OnInit, OnDestroy {
   }
   get mobile() {
     return this.form.get('mobile') as FormControl;
-  }
-
-  ngOnInit() {
-    this.valueChanges();
   }
 
   valueChanges() {

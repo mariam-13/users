@@ -20,6 +20,10 @@
     <td>{{ user.email }}</td>
     <td>{{ user.mobile }}</td>
     <td><button (click)="select.emit(user.id)">Select</button></td>
-    <td><button (click)="edit.emit(user.id)">Edit</button></td>
+    <td>
+      <button (click)="edit.emit(user.id)" [routerLink]="['/users', user.id]">
+        Edit
+      </button>
+    </td>
   </tr>
 </table>

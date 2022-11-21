@@ -1,5 +1,5 @@
 <button (click)="onDelete()" [disabled]="!selectedUserId">Delete</button>
-<button (click)="onAddNewUser()">Add</button>
+<button (click)="onAddNewUser()" routerLink="create">Add</button>
 
 <app-users-list
   [selectedId]="selectedUserId"
@@ -7,10 +7,12 @@
   (select)="selectedUserId = $event"
   (edit)="onEdit($event)"
 ></app-users-list>
-<app-form
+<!-- <app-form
   *ngIf="addNewUserMode || chosenPostToEdit"
   [chosenPostToEdit]="chosenPostToEdit"
   (onSubmit)="onSubmit($event)"
-></app-form>
+></app-form> -->
+
+<app-error-handler></app-error-handler>
 
 <app-http-loader></app-http-loader>
